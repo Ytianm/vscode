@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            width: 250px;
+            height: 500px;
+            background: #e5e5e5;
+            border: 1px solid #888;
+            margin: 0 auto;
+            border-radius: 5px;
+        }
+
+        #head {
+            height: 80px;
+            background: #567;
+            margin-bottom: 10px;
+        }
+
+        #container li {
+            list-style: none;
+        }
+
+        #container ul ul li {
+            font-size: 18px;
+            line-height: 30px;
+            text-indent: 2em;
+            background: #eee;
+            margin-bottom: 2px;
+        }
+
+        #container ul ul li.hover {
+            background: #765;
+            filter: opacity(0.5);
+        }
+
+        h4 {
+            padding-left: 10px;
+            background: #888;
+            margin-bottom: 1px;
+            cursor: default;
+        }
+        /* #tlist ul{
+            display: none;
+        } */
+
+        .active {
+            display: none;
+        }
+    </style>
+
+    <script>
+        window.onload = function () {
+            var tList = document.getElementById("tlist");
+            var tH = tList.getElementsByTagName("h4");
+            var tUl = tList.getElementsByTagName("ul");
+
+
+            var last = tUl[0]; //随便一个列表都可以，tUl[1]、tUl[2]，因为默认状态三个都是一样的（关闭状态）
+
+            for (var i = 0; i < tH.length; i++) {
+                tH[i].index = i;
+                tH[i].onclick = function () {
+
+                 
+                    if (tUl[this.index].className == "") { //打开状态
+                        //判断上一个列表的状态，如果是打开，则初始化到关闭状态（全部）
+                        //如果不需要打开当前列表时关闭上一列表，下面的if语句要去掉
+                        if (last.className == "") {
+                            for (var i = 0; i < tH.length; i++) {
+                                tUl[i].className = "active";
+                            }
+                        }
+
+                        // tUl[this.index].className = "active";  //因为上面if语句里的for循环已经全部初始化关闭了，所以这条可以省掉
+                                                                  //如果没有if，那这条要加上
+
+                    } else { //关闭状态
+                        //判断上一个列表的状态，如果是打开，则初始化到关闭状态（全部）
+                        //如果不需要打开当前列表时关闭上一列表，下面的if语句要去掉
+                        if (last.className == "") {
+                            for (var i = 0; i < tH.length; i++) {
+                                tUl[i].className = "active";
+                            }
+                        }
+                        tUl[this.index].className = ""; //打开
+
+                        last = this; //把当前状态赋给下一个状态，用于下一次点击时做判断条件
+                    }
+                }
+            }
+
+
+
+            var arrLi = [];
+
+            //第一个循环
+            for (var j = 0; j < tUl.length; j++) {
+                //定义变量nLi存储li的集合，j=0时有4个，j=1时由4个，j=2时有2个
+                var nLi = tUl[j].getElementsByTagName("li");
+
+                console.log(1);
+
+                //1.查找数组(tlist中的tUl)的数组(tUl中li)要用for套for
+
+                //方法1（非正解）
+                /*
+                2.特别注意：以下这种方法有一个“bug”，上面的for循环中，j从0到2，j=0时，nLi数组存储的是“我的好友”里面的li，
+                j=1时，nLi数组存储的是“我的同事”里面的li，当j=2时，nLi数组存储的是“陌生人”里的li，到循环结束时，j=2，此时nLi
+                数组其实就只是存储了“陌生人”里的2个li，所以，点击li执行onclick事件里的函数时，第一步做的for循环初始化样式，不管
+                点击的是哪个li，初始化的都是“陌生人”里的那2个li。
+                可以这样理解，上面的for循环，就是往nLi里输入数组，第一次4个，第二次4个，关键就在这，第二次的4个会替换掉上一次的
+                4个，同理，第三次的2个会替换第二次的4个，也就是说，nLi里的数组存储的元素就是最后一次循环输入的li。
+                */
+
+                //第二个循环（方法1）
+
+                // for (var n = 0; n < nLi.length; n++) {
+
+                //     console.log(2);
+
+                //     nLi[n].onclick = function () {
+
+                //         console.log('j=' + j);
+                //         console.log(nLi);
+                //         console.log(3);
+
+                //         //初始化li的样式，nLi是第一个for循环中的最后一次循环输入的数组，即j=2时，对应的是“陌生人”里的2个li
+                //         for (var m = 0; m < nLi.length; m++) {
+                //             nLi[m].className = "";
+
+                //             console.log(4);
+                //         };
+                //         this.className = "hover";
+
+                //         console.log(5)
+                //         console.log(n);
+                //     }
+                // }
+
+
+
+                //方法2（正解）
+                for (var n = 0; n < nLi.length; n++) {
+                    //找出所有要改变的li，存在定义的空数组arrLi[]里
+                    arrLi.push(nLi[n]); //tUl循环3次，共4+4+2个li
+                }
+
+                //第二个循环（方法2）
+                //给数组里的所有li添加点击事件
+                for (var i = 0; i < arrLi.length; i++) {
+                    arrLi[i].onclick = function () {
+
+                        //初始化li的样式,这样的初始化才有意义，因为arrLi里包含了所有li
+                        for (i = 0; i < arrLi.length; i++) {
+                            arrLi[i].className = "";
+                        }
+
+                        this.className = "hover";
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="container">
+        <div id="head">
+
+        </div>
+        <ul id="tlist">
+            <li>
+                <h4>我的好友</h4>
+                <ul class="active">
+                    <li>小A</li>
+                    <li>小B</li>
+                    <li>小C</li>
+                    <li>小D</li>
+                </ul>
+            </li>
+            <li>
+                <h4>我的同事</h4>
+                <ul class="active">
+                    <li>小H</li>
+                    <li>小E</li>
+                    <li>小L</li>
+                    <li>小S</li>
+                </ul>
+            </li>
+            <li>
+                <h4>陌生人</h4>
+                <ul class="active">
+                    <li>小X</li>
+                    <li>小G</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</body>
+
+</html>
